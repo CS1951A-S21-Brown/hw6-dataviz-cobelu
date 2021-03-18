@@ -159,12 +159,12 @@ function filterData(data) {
     // [{"genre": comedy, "count": 2}, {"genre": action, "count": 3}, ...]
     let return_list = [];
     for (let genre in genre_counts) {
-        return_list.push({"genre": genre, "count": genre_counts[genre]})
+        return_list.push({"genre": genre, "count": genre_counts[genre]});
     }
     console.log(return_list);
     // Let's go ahead and sort them too while we're at it
     let sorted_data = return_list.sort(function (a, b) {
-        return b["count"] - a["count"]
+        return b["count"] - a["count"];
     });
     console.log(sorted_data);
     return sorted_data;
