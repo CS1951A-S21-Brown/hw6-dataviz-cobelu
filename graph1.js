@@ -18,7 +18,7 @@ let tooltip = d3.select("#graph1") // Div ID for the first graph
 // Load the CSV file
 d3.csv(data_file).then(function (data) {
     // Filter the data for genres and counts
-    data = filterData(data);
+    data = filterData1(data);
 
     /*
         HINT: Here we introduce the d3.extent, which can be used to return the min and
@@ -138,7 +138,7 @@ d3.csv(data_file).then(function (data) {
 /**
  * Your boss wants to know the number of titles per genre on Netflix.
  */
-function filterData(data) {
+function filterData1(data) {
     // {'genre1': count1, genre2: count2, ...}
     let genre_counts = {};
     for (let i = 0; i < data.length; i++) {
