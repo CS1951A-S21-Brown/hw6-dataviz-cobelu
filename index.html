@@ -1,30 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <meta charset="utf-8">
-        <title>Assignment 6 &laquo; Data Visualization Dashboard&raquo;</title>
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
-        <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
-        <link rel="stylesheet" href="main.css"/>
-        <!--Feel free to add more CSS files as needed-->
-    </head>
+    <meta charset="utf-8">
+    <title>Assignment 6 &laquo; Data Visualization Dashboard&raquo;</title>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+    <link rel="stylesheet" href="main.css"/>
+    <!--Feel free to add more CSS files as needed-->
+</head>
 <body>
-    <div class="header">
-        <h3>Assignment 6 &laquo; Data Visualization Dashboard &raquo;</h3>
+<div class="header">
+    <h3>Assignment 6 &laquo; Data Visualization Dashboard &raquo;</h3>
+</div>
+<!--  We included a basic HTML structure for the 3 graphs here. Feel free to change this if you'd like  -->
+<div class="row">
+    <div class="col-lg-6">
+        <div id="graph1"></div>
+        <div id="graph2"></div>
+        <br/>
     </div>
-    <!--  We included a basic HTML structure for the 3 graphs here. Feel free to change this if you'd like  -->
-    <div class="row">
-        <div class="col-lg-6">
-            <div id="graph1"></div>
-            <div id="graph2"></div><br/>
-        </div>
-        <div class="col-lg-6">
-            <div id="graph3"></div>
-        </div>
+    <div class="col-lg-6">
+        <div id="graph3"></div>
     </div>
-    <!--Feel free to add more JavaScript files as needed-->
-    <script type="text/javascript" src="main.js"></script>
-    <script type="text/javascript" src="graph1_alt.js"></script>
-<!--    <script type="text/javascript" src="graph2.js"></script>-->
+</div>
+<!--Feel free to add more JavaScript files as needed-->
+<script type="text/javascript" src="main.js"></script>
+<!--    <script type="text/javascript" src="graph1_alt.js"></script>-->
+<script type="text/javascript" src="graph2.js"></script>
+<!--<script type="text/javascript" src="graph3.js"></script>-->
+
+<br/>
+
+<h2>Written Questions</h2>
+
+<h3>D3 Questions</h3>
+
+<ol>
+    <li>
+        My dashboard addresses the question by...
+    </li>
+    <li>
+        List 3 reasons why D3 was helpful and improved your visualization
+        <ul>
+            <li>
+                It's super easy to make animated visualizations.
+            </li>
+            <li>
+                You can make way more kinds of visualization in d3 than you can in pandas.
+            </li>
+            <li>
+                It's wonderful to be able to have d3 update your charts as the data comes in.
+            </li>
+        </ul>
+    </li>
+    <li>
+        List 3 reasons why D3 would not be the best tool for creating a visualization
+        <ul>
+            <li>
+                If you don't need animations, it's so much faster to just to make static charts in pandas.
+            </li>
+            <li>
+                JavaScript can be kind of slow and processing data in the way we do (on-the-fly).
+                It might lead to some serious performance issues for trying to visualizations for display large
+                datasets.
+            </li>
+            <li>
+                I've learned from this assignment that it's incredibly time-consuming to debug JavaScript.
+            </li>
+        </ul>
+    </li>
+</ol>
+
+<h3>Accessible Data Visualization</h3>
+
 </body>
 </html>
+

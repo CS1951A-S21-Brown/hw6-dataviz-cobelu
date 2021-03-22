@@ -9,156 +9,348 @@ let svg = d3.select("#graph2")
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+// Set up reference to tooltip                                                                                                                                                                                                                                                                                                         ip
+let tooltip = d3.select("#graph2") // Div ID for the first graph
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
-// Set up reference to toolt                                                                                                                                                                                                                                                                                                         ip
-// let tooltip = d3.select("#graph2") // Div ID for the first graph
-//     .append("div")
-//     .attr("class", "tooltip")
-//     .style("opacity", 0);
+// Add a search field. Based on:
+// http://bl.ocks.org/jfreels/6810705
+let searchField = d3.select('#graph2')
+    .append('input')
+    .attr('type', 'text')
+    .attr('name', 'textInput')
+    .attr('id', 'yearInput')
+    .attr('value', 'Enter year here')
+    .attr("transform", `translate(0, 0)`);
 
+let searchButton = d3.select('#graph2')
+    .append('input')
+    .attr('type', 'button')
+    .attr('name', 'updateButton')
+    .attr('value', 'Search')
+    .on('click', onUpdate)
+    .attr("transform", `translate(0, 0)`);
+
+function onUpdate() {
 // Load the CSV file
-d3.csv(data_file).then(function (data) {
-    // console.log(data);
+    d3.csv(data_file).then(function (data) {
+        // console.log(data);
 
-    // Filter the data for genres and counts
-    data = filterData2(data);
-    // Get the stats to be plotted
-    data = compute_stats(data);
-    // TODO: slice to debug
-    data = data.slice(0, 2);
+        // Filter the data for genres and counts
+        data = filterData2(data);
+        // Get the stats to be plotted
+        data = compute_stats(data);
 
-    console.log(data);
+        console.log(data);
 
-    /*
-        HINT: Here we introduce the d3.extent, which can be used to return the min and
-        max of a dataset.
+        let year = searchField.node().value
 
-        We want to use an anonymous function that will return a parsed JavaScript date (since
-        our x-axis is time). Try using Date.parse() for this.
-     */
+        // Get the year selected
+        data = getDataFromYear(data, year);
 
-    // Create a band scale for the years on the x axis
-    let x = d3.scaleBand()
-        .range([0, graph_2_width - margin.left - margin.right])
-        .domain(data.map(function (d) {
-            return d.key;
-        }))
-        .padding(0.1); // Improves readability
+        console.log(data);
 
-    // Add a label to the x-axis
-    svg.append("g")
-        .attr("transform", `translate(0, ${graph_2_height - margin.top - margin.bottom})`)       // Position this at the bottom of the graph. Make the x shift 0 and the y shift the height (adjusting for the margin)
-        .call(d3.axisBottom(x));
+        /*
+            HINT: Here we introduce the d3.extent, which can be used to return the min and
+            max of a dataset.
 
-    // Create a linear scale for the runtime on the y-axis
-    let y = d3.scaleLinear()
-        .range([graph_2_height - margin.top - margin.bottom, 0])
-        .domain([0, d3.max(data, function (d) {
-            console.log(d.value.max)
-            return d.value.max;
-        })])
+            We want to use an anonymous function that will return a parsed JavaScript date (since
+            our x-axis is time). Try using Date.parse() for this.
+         */
 
-    console.log(`x.domain(): ${x.domain()}`)
-    console.log(`y.domain(): ${y.domain()}`)
-    console.log(`x.range(): ${x.range()}`)
-    console.log(`y.range(): ${y.range()}`)
+        // Create a band scale for the years on the x axis
+        let x = d3.scaleBand()
+            .range([0, graph_2_width - margin.left - margin.right])
+            .domain(data.map(function (d) {
+                return d.key;
+            }))
+            .padding(0.1); // Improves readability
 
-    // Add label to the y-axis
-    svg.append("g")
-        .call(d3.axisLeft(y));
+        // Add a label to the x-axis
+        svg.append("g")
+            .attr("transform", `translate(0, ${graph_2_height - margin.top - margin.bottom})`)       // Position this at the bottom of the graph. Make the x shift 0 and the y shift the height (adjusting for the margin)
+            .call(d3.axisBottom(x));
 
-    // Add some color
-    // let color = d3.scaleOrdinal()
-    //     .domain(function (d) {
-    //         return d.key;
-    //     })
-    //     .range(d3.quantize(d3.interpolateHcl("#66a0e2", "#ff5c7a"), data.length));
+        // Create a linear scale for the runtime on the y-axis
+        let y = d3.scaleLinear()
+            .range([graph_2_height - margin.top - margin.bottom, 0])
+            .domain([0, d3.max(data, function (d) {
+                console.log(d.value.high)
+                return d.value.high;
+            })])
 
-    // Draw the vertical lines
-    svg.selectAll("vertLines")
-        .data(data)
-        .enter()
-        .append("line")
-        .attr("x1", function (d) {
-            // console.log(`d.key: ${d.key}; x(d.year): ${x(d.key)}`);
-            return x(d.key) + boxWidth / 2;
-        })
-        .attr("x2", function (d) {
-            return x(d.key) + boxWidth / 2;
-        })
-        .attr("y1", function (d) {
-            return y(d.value.min);
-        })
-        .attr("y2", function (d) {
-            return y(d.value.max);
-        })
-        .attr("stroke", "black") // Black is good for visibility
-        .style("width", 80) // Wider for visibility
+        console.log(`x.domain(): ${x.domain()}`)
+        console.log(`y.domain(): ${y.domain()}`)
+        console.log(`x.range(): ${x.range()}`)
+        console.log(`y.range(): ${y.range()}`)
 
+        // Show the MEAN on mouseover
+        let mouseover = function (d) {
+            let html = `${d.key}<br/>Mean: ${d.value.mean}`;
+            tooltip.html(html)
+                .style("left", `${d3.event.pageX - 50}px`)
+                .style("top", `${d3.event.pageY - 50}px`)
+                .transition()
+                .duration(200)
+                .style("opacity", 0.95)
+        };
 
-    // Rectangles for the main box
-    svg.selectAll("rects")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("x", function (d) {
-            return x(d.key);
-        })
-        .attr("y", function (d) {
-            return y(d.value.q3);
-        })
-        .attr("height", function (d) {
-            return -(y(d.value.q3) - y(d.value.q1));
-        })
-        .attr("width", boxWidth)
-        .attr("stroke", "black")
-        .style("fill", "#92a5b0");
-    // .on("mouseover", mouseover) // HINT: Pass in the mouseover and mouseout functions here
-    // .on("mouseout", mouseout);
+        // Hide the mean on mouseover
+        let mouseout = function (d) {
+            // Set opacity back to 0 to hide
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 0);
+        };
 
-    // Draw the medians
-    svg.selectAll("medianLines")
-        .data(data)
-        .enter()
-        .append('line')
-        .attr("x1", function (d) {
-            // console.log(`x1: ${x(d.key) + boxWidth / 2}`)
-            return x(d.key);
-        })
-        .attr("x2", function (d) {
-            // console.log(`x2: ${x(d.key) + 3 * boxWidth / 2}`)
-            return x(d.key) + boxWidth;
-        })
-        .attr("y1", function (d) {
-            // console.log(`y: ${y(d.value.median)}`)
-            return y(d.value.median);
-        })
-        .attr("y2", function (d) {
-            return y(d.value.median);
-        })
-        .attr("stroke", "black")
-        .style("width", 80);
+        // Add label to the y-axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
 
-    // Add x-axis label
-    svg.append("text")
-        .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2},
-                                    ${(graph_2_height - margin.top - margin.bottom) + 30})`)       // HINT: Place this at the bottom middle edge of the graph
-        .style("text-anchor", "middle")
-        .text("Year");
+        // Draw the vertical lines
+        let verts = svg.selectAll("verts").data(data)
 
-    // Add y-axis label
-    svg.append("text")
-        .attr("transform", `translate(-80, ${(graph_2_height - margin.top - margin.bottom) / 2})`)       // HINT: Place this at the center left edge of the graph
-        .style("text-anchor", "middle")
-        .text("Runtime");
+        verts.enter()
+            .append("line")
+            .merge(verts)
+            .transition()
+            .duration(1000)
+            .attr("x1", function (d) {
+                // console.log(`d.key: ${d.key}; x(d.year): ${x(d.key)}`);
+                return x(d.key) + boxWidth;
+            })
+            .attr("x2", function (d) {
+                return x(d.key) + boxWidth;
+            })
+            .attr("y1", function (d) {
+                return y(d.value.low);
+            })
+            .attr("y2", function (d) {
+                return y(d.value.high);
+            })
+            .attr("stroke", "black") // Black is good for visibility
+            .style("width", 80) // Wider for visibility
 
-    // Add chart title
-    svg.append("text")
-        .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${-20})`)       // HINT: Place this at the top middle edge of the graph
-        .style("text-anchor", "middle")
-        .style("font-size", 15)
-        .text(`Runtimes per Year`);
-});
+        // Rectangles for the main box
+        let rects = svg.selectAll("rects")
+            .data(data)
+
+        rects.enter()
+            .append("rect")
+            .merge(rects)
+            .transition()
+            .duration(1000)
+            .attr("x", function (d) {
+                return x(d.key) + boxWidth / 2;
+            })
+            .attr("y", function (d) {
+                return y(d.value.q3);
+            })
+            .attr("height", function (d) {
+                return -(y(d.value.q3) - y(d.value.q1));
+            })
+            .attr("width", boxWidth)
+            .attr("stroke", "black")
+            .style("fill", "#92a5b0")
+            .on("mouseover", mouseover)
+            .on("mouseout", mouseout);
+
+        // Draw the medians
+        let meds = svg.selectAll("medians").data(data)
+
+        meds.enter()
+            .append('line')
+            .merge(meds)
+            .transition()
+            .duration(1000)
+            .attr("x1", function (d) {
+                // console.log(`x1: ${x(d.key) + boxWidth / 2}`)
+                return x(d.key) + boxWidth / 2;
+            })
+            .attr("x2", function (d) {
+                // console.log(`x2: ${x(d.key) + 3 * boxWidth / 2}`)
+                return x(d.key) + 3 * boxWidth / 2;
+            })
+            .attr("y1", function (d) {
+                // console.log(`y: ${y(d.value.median)}`)
+                return y(d.value.median);
+            })
+            .attr("y2", function (d) {
+                return y(d.value.median);
+            })
+            .attr("stroke", "black")
+            .style("width", 80);
+
+        // Draw the min lines
+        let mins = svg.selectAll("mins").data(data)
+
+        mins.enter()
+            .append('line')
+            .merge(mins)
+            .transition()
+            .duration(1000)
+            .attr("x1", function (d) {
+                // console.log(`x1: ${x(d.key) + boxWidth / 2}`)
+                return x(d.key) + 3 * boxWidth / 4;
+            })
+            .attr("x2", function (d) {
+                // console.log(`x2: ${x(d.key) + 3 * boxWidth / 2}`)
+                return x(d.key) + 5 * boxWidth / 4;
+            })
+            .attr("y1", function (d) {
+                // console.log(`y: ${y(d.value.median)}`)
+                return y(d.value.low);
+            })
+            .attr("y2", function (d) {
+                return y(d.value.low);
+            })
+            .attr("stroke", "black")
+            .style("width", 80);
+
+        // Draw the max lines
+        let maxes = svg.selectAll("maxes").data(data)
+
+        maxes.enter()
+            .append('line')
+            .merge(maxes)
+            .transition()
+            .duration(1000)
+            .attr("x1", function (d) {
+                // console.log(`x1: ${x(d.key) + boxWidth / 2}`)
+                return x(d.key) + 3 * boxWidth / 4;
+            })
+            .attr("x2", function (d) {
+                // console.log(`x2: ${x(d.key) + 3 * boxWidth / 2}`)
+                return x(d.key) + 5 * boxWidth / 4;
+            })
+            .attr("y1", function (d) {
+                // console.log(`y: ${y(d.value.median)}`)
+                return y(d.value.high);
+            })
+            .attr("y2", function (d) {
+                return y(d.value.high);
+            })
+            .attr("stroke", "black")
+            .style("width", 80);
+
+        // Add the selection box
+        // Based on: https://gist.github.com/jfreels/6734823
+        svg.append('select')
+            .selectAll("year_selection")
+            .attr('class', 'select')
+            .data(data)
+            .enter()
+            .append('option')
+            .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${margin.top})`)
+            .text(function (d) {
+                console.log(d)
+                return d.key;
+            });
+
+        // Add x-axis label
+        svg.append("text")
+            .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2},
+                                    ${(graph_2_height - margin.top - margin.bottom) + 30})`)
+            .style("text-anchor", "middle")
+            .text("Year");
+
+        // Add y-axis label
+        svg.append("text")
+            .attr("transform", `translate(-80, ${(graph_2_height - margin.top - margin.bottom) / 2})`)
+            .style("text-anchor", "middle")
+            .text("Runtime");
+
+        // Add chart title
+        svg.append("text")
+            .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${-20})`)
+            .style("text-anchor", "middle")
+            .style("font-size", 15)
+            .text(`Runtimes per Year`);
+
+        rects.exit().remove()
+        verts.exit().remove()
+        meds.exit().remove()
+        mins.exit().remove()
+        maxes.exit().remove()
+
+        function compute_stats(data) {
+            // https://www.d3-graph-gallery.com/graph/boxplot_several_groups.html
+            // NOTE THAT THE BOX-AND-WHISKER MIN IS CALLED "LOW" AND THE MAX IS CALLED "HIGH"
+            // BECAUSE THE TRUE MIN AND MAX ARE RETURNED FOR POSSIBLE DISPLAY IN A POPUP.
+            return d3.nest()
+                .key(function (d) {
+                    return d['year']
+                })
+                // We will have to roll up the quartiles and such,
+                // so DO NOT FORGET that they're nested!!!
+                .rollup(function (d) {
+                    // TRUE min
+                    const min = d3.min(d.map(function (e) {
+                        return e['runtime'];
+                    }));
+                    // TRUE max
+                    const max = d3.max(d.map(function (e) {
+                        return e['runtime'];
+                    }));
+                    // Quartile 1
+                    const q1 = d3.quantile(d.map(function (e) {
+                        return e['runtime'];
+                    }).sort(d3.ascending), .25); // 25%
+                    // Quartile 2
+                    const q2 = d3.quantile(d.map(function (e) {
+                        return e['runtime'];
+                    }).sort(d3.ascending), .5); // 50%
+                    // Quartile 3
+                    const q3 = d3.quantile(d.map(function (e) {
+                        return e['runtime'];
+                    }).sort(d3.ascending), .75); // 75%
+                    // Mean
+                    const mean = d3.mean(d.map(function (e) {
+                        return e['runtime'];
+                    }).sort(d3.ascending))
+                    // Definition of quartile range:
+                    // https://www.statisticshowto.com/probability-and-statistics/interquartile-range/
+                    const interQuantileRange = q3 - q1;
+                    // Lows and Highs of the
+                    const low = q1 - 1.5 * interQuantileRange;
+                    const high = q3 + 1.5 * interQuantileRange;
+                    return ({
+                        q1: q1,
+                        median: q2,
+                        q3: q3,
+                        interQuantileRange: interQuantileRange,
+                        low: low,
+                        high: high,
+                        min: min,
+                        max: max,
+                        mean: mean
+                    });
+                })
+                .entries(data);
+        }
+
+        function getDataFromYear(data, year) {
+            return data.filter(function (d) {
+                return d.key === year;
+            })
+        }
+
+        function setFilteredYear(year) {
+            // TODO: This function
+            let filteredData = getDataFromYear(data, year)
+            // Update labels and domains
+            x.domain(filteredData.map(function (d) {
+                return d.key;
+            }))
+            y.domain([0, d3.max(filteredData, function (d) {
+                return d.value.high;
+            })])
+        }
+
+    })
+}
 
 /**
  * Your boss wants to understand the average runtime of movies by release year.
@@ -179,38 +371,6 @@ function filterData2(data) {
     return return_list;
 }
 
-function compute_stats(data) {
-    // https://www.d3-graph-gallery.com/graph/boxplot_several_groups.html
-    return d3.nest()
-        .key(function (d) {
-            return d['year'];
-        })
-        // .sortKeys(d3.ascending)
-        .rollup(function (d) {
-            const q1 = d3.quantile(d.map(function (e) {
-                return e['runtime'];
-            }).sort(d3.ascending), .25);
-            const q2 = d3.quantile(d.map(function (e) {
-                return e['runtime'];
-            }).sort(d3.ascending), .5);
-            const q3 = d3.quantile(d.map(function (e) {
-                return e['runtime'];
-            }).sort(d3.ascending), .75);
-            const mean = d3.mean(d.map(function (e) {
-                return e['runtime'];
-            }).sort(d3.ascending))
-            const interQuantileRange = q3 - q1;
-            const min = q1 - 1.5 * interQuantileRange;
-            const max = q3 + 1.5 * interQuantileRange;
-            return ({
-                q1: q1,
-                median: q2,
-                q3: q3,
-                interQuantileRange: interQuantileRange,
-                min: min,
-                max: max,
-                mean: mean
-            });
-        })
-        .entries(data);
-}
+
+// Set initial on load
+onUpdate()

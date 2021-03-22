@@ -19,7 +19,7 @@ d3.csv(data_file).then(function (data) {
     // Filter the data for genres and counts
     data = filterData1Alt(data);
 
-    let root = d3.stratify()
+    let root = d3.stratify()  // Stratidy explained: https://observablehq.com/@d3/d3-stratify
         .id(function (d) {
             return d.genre;
         })
@@ -27,15 +27,16 @@ d3.csv(data_file).then(function (data) {
             return d.parent;
         })
         (data);
+
     root.sum(function (d) {
-        return +d.count
+        return d.count
     })
 
     // https://www.d3-graph-gallery.com/graph/treemap_basic.html
     d3.treemap()
         .size([graph_1_width - margin.left - margin.right, graph_1_height - margin.top - margin.bottom])
         .padding(3)
-        (root)
+        (root) // Note that we're passing in the root as an argument to this function!
 
     // Double check that things were added properly!
     // console.log(root.leaves())
@@ -96,7 +97,6 @@ d3.csv(data_file).then(function (data) {
         .text(`Titles per Genre`);
 });
 
-
 /**
  * Your boss wants to know the number of titles per genre on Netflix.
  */
@@ -121,7 +121,7 @@ function filterData1Alt(data) {
     // [{"genre": comedy, "count": 2}, {"genre": action, "count": 3}, ...]
     let return_list = [];
     for (let genre in genre_counts) {
-        return_list.push({"genre": genre, "count": genre_counts[genre], "parent": "Origin"});
+            return_list.push({"genre": genre, "count": genre_counts[genre], "parent": "Origin"});
     }
     // console.log(return_list);
     // Let's go ahead and sort them too while we're at it
