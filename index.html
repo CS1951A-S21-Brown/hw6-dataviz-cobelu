@@ -24,11 +24,11 @@
     </div>
 </div>
 <!--Feel free to add more JavaScript files as needed-->
-<script type="text/javascript" src="main.js"></script>
-<!--    <script type="text/javascript" src="graph1_alt.js"></script>-->
-<script type="text/javascript" src="graph2.js"></script>
-<!--<script type="text/javascript" src="graph3.js"></script>-->
-
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="graph1_alt.js"></script>
+    <script type="text/javascript" src="graph2.js"></script>
+    <script type="text/javascript" src="graph3.js"></script>
+<!---->
 <br/>
 
 <h2>Written Questions</h2>
@@ -38,6 +38,29 @@
 <ol>
     <li>
         My dashboard addresses the question by...
+        <ol>
+            <li>
+                I show all genres in a treemap. The tooltip pops up to show the name of the genre with the count.
+                I would like to have been able to split them between "Movie" and "TV Show",
+                but I could not figure out how to nest the data in order to do that.
+                Although, this does show the number of titles per genre (and gives a nice size comparison).
+            </li>
+        </ol>
+        <ol>
+            <li>
+                I show a boxplot of runtime per year. Year is selectable in the text field.
+                This may not allow easy comparisons, but displaying all years would be too much information to show.
+                A boxplot shows more information than only the mean,
+                but since I had to include the mean, it is displayed on mouse hover.
+            </li>
+        </ol>
+        <ol>
+            <li>
+                I show each director and actor as nodes in a graph. A film including both is represented by an edge.
+                Showing the entire dataset makes the webpage unusable,
+                but it is difficult to show a graph that large and disconnected.
+            </li>
+        </ol>
     </li>
     <li>
         List 3 reasons why D3 was helpful and improved your visualization
@@ -72,6 +95,23 @@
 </ol>
 
 <h3>Accessible Data Visualization</h3>
+
+<ul>
+    <li>
+        Whenever possible, I tried to use blue and orange, which are good colors to accommodate the colorblind community.
+        It will be difficult for the blind to navigate the graph structure when all of the data is displayed.
+        I'd like to know if the popup text is actually read by a screen-reader or not.
+
+    </li>
+    <li>
+        The difficulty of using d3 kept me from making my dashboard more accessible.
+        Further, I did not see a single example online of using alt text, so I have absolutely no idea how to do it.
+        Also, I don't have a screen-reader, so I can't verify anything for the blind community.
+        In addition, the submission deadline forces us to focus on having a minimally-functioning page
+        before we focus on accommodating others,
+        which I'm sure is a point of this assignment since this is typical in industry.
+    </li>
+</ul>
 
 </body>
 </html>

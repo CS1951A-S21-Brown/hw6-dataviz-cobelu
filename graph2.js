@@ -2,7 +2,7 @@
 const boxWidth = 100;
 
 // Set up an SVG object
-let svg = d3.select("#graph2")
+let svg2 = d3.select("#graph2")
     .append("svg")
     .attr("width", graph_2_width)
     .attr("height", graph_2_height)
@@ -10,7 +10,7 @@ let svg = d3.select("#graph2")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Set up reference to tooltip                                                                                                                                                                                                                                                                                                         ip
-let tooltip = d3.select("#graph2") // Div ID for the first graph
+let tooltip2 = d3.select("#graph2") // Div ID for the first graph
     .append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
@@ -23,7 +23,7 @@ let searchField = d3.select('#graph2')
     .attr('name', 'textInput')
     .attr('id', 'yearInput')
     .attr('value', 'Enter year here')
-    .attr("transform", `translate(0, 0)`);
+    .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${graph_2_height - margin.top - margin.bottom + 10})`);
 
 let searchButton = d3.select('#graph2')
     .append('input')
@@ -31,11 +31,32 @@ let searchButton = d3.select('#graph2')
     .attr('name', 'updateButton')
     .attr('value', 'Search')
     .on('click', onUpdate)
-    .attr("transform", `translate(0, 0)`);
+    .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${graph_2_height - margin.top - margin.bottom + 20})`);
+
+let y_axis_label = svg2.append("g");
+// Bottom center of graph
+let x_axis_label = svg2.append("g")
+    .attr("transform", `translate(0, ${graph_2_height - margin.top - margin.bottom})`)
+
+let verts = svg2.selectAll("vert")
+let meds = svg2.selectAll("median")
+let rects = svg2.selectAll("rect")
+let maxes = svg2.selectAll("max")
+let mins = svg2.selectAll("min")
+
 
 function onUpdate() {
 // Load the CSV file
     d3.csv(data_file).then(function (data) {
+
+        mins.exit().remove()
+        maxes.exit().remove()
+        rects.exit().remove()
+        meds.exit().remove()
+        verts.exit().remove()
+
+        // https://stackoverflow.com/a/22453174
+
         // console.log(data);
 
         // Filter the data for genres and counts
@@ -69,9 +90,7 @@ function onUpdate() {
             .padding(0.1); // Improves readability
 
         // Add a label to the x-axis
-        svg.append("g")
-            .attr("transform", `translate(0, ${graph_2_height - margin.top - margin.bottom})`)       // Position this at the bottom of the graph. Make the x shift 0 and the y shift the height (adjusting for the margin)
-            .call(d3.axisBottom(x));
+        x_axis_label.call(d3.axisBottom(x));
 
         // Create a linear scale for the runtime on the y-axis
         let y = d3.scaleLinear()
@@ -89,7 +108,7 @@ function onUpdate() {
         // Show the MEAN on mouseover
         let mouseover = function (d) {
             let html = `${d.key}<br/>Mean: ${d.value.mean}`;
-            tooltip.html(html)
+            tooltip2.html(html)
                 .style("left", `${d3.event.pageX - 50}px`)
                 .style("top", `${d3.event.pageY - 50}px`)
                 .transition()
@@ -100,23 +119,18 @@ function onUpdate() {
         // Hide the mean on mouseover
         let mouseout = function (d) {
             // Set opacity back to 0 to hide
-            tooltip.transition()
+            tooltip2.transition()
                 .duration(200)
                 .style("opacity", 0);
         };
 
         // Add label to the y-axis
-        svg.append("g")
-            .call(d3.axisLeft(y));
+        y_axis_label.call(d3.axisLeft(y));
 
         // Draw the vertical lines
-        let verts = svg.selectAll("verts").data(data)
-
-        verts.enter()
+        verts.data(data)
+            .enter()
             .append("line")
-            .merge(verts)
-            .transition()
-            .duration(1000)
             .attr("x1", function (d) {
                 // console.log(`d.key: ${d.key}; x(d.year): ${x(d.key)}`);
                 return x(d.key) + boxWidth;
@@ -134,14 +148,9 @@ function onUpdate() {
             .style("width", 80) // Wider for visibility
 
         // Rectangles for the main box
-        let rects = svg.selectAll("rects")
-            .data(data)
-
-        rects.enter()
+        rects.data(data)
+            .enter()
             .append("rect")
-            .merge(rects)
-            .transition()
-            .duration(1000)
             .attr("x", function (d) {
                 return x(d.key) + boxWidth / 2;
             })
@@ -153,18 +162,14 @@ function onUpdate() {
             })
             .attr("width", boxWidth)
             .attr("stroke", "black")
-            .style("fill", "#92a5b0")
+            .style("fill", "#ffb84d")
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
 
         // Draw the medians
-        let meds = svg.selectAll("medians").data(data)
-
-        meds.enter()
+        meds.data(data)
+            .enter()
             .append('line')
-            .merge(meds)
-            .transition()
-            .duration(1000)
             .attr("x1", function (d) {
                 // console.log(`x1: ${x(d.key) + boxWidth / 2}`)
                 return x(d.key) + boxWidth / 2;
@@ -184,13 +189,9 @@ function onUpdate() {
             .style("width", 80);
 
         // Draw the min lines
-        let mins = svg.selectAll("mins").data(data)
-
-        mins.enter()
+        mins.data(data)
+            .enter()
             .append('line')
-            .merge(mins)
-            .transition()
-            .duration(1000)
             .attr("x1", function (d) {
                 // console.log(`x1: ${x(d.key) + boxWidth / 2}`)
                 return x(d.key) + 3 * boxWidth / 4;
@@ -210,13 +211,9 @@ function onUpdate() {
             .style("width", 80);
 
         // Draw the max lines
-        let maxes = svg.selectAll("maxes").data(data)
-
-        maxes.enter()
+        maxes.data(data)
+            .enter()
             .append('line')
-            .merge(maxes)
-            .transition()
-            .duration(1000)
             .attr("x1", function (d) {
                 // console.log(`x1: ${x(d.key) + boxWidth / 2}`)
                 return x(d.key) + 3 * boxWidth / 4;
@@ -237,7 +234,7 @@ function onUpdate() {
 
         // Add the selection box
         // Based on: https://gist.github.com/jfreels/6734823
-        svg.append('select')
+        svg2.append('select')
             .selectAll("year_selection")
             .attr('class', 'select')
             .data(data)
@@ -250,30 +247,24 @@ function onUpdate() {
             });
 
         // Add x-axis label
-        svg.append("text")
+        svg2.append("text")
             .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2},
                                     ${(graph_2_height - margin.top - margin.bottom) + 30})`)
             .style("text-anchor", "middle")
             .text("Year");
 
         // Add y-axis label
-        svg.append("text")
+        svg2.append("text")
             .attr("transform", `translate(-80, ${(graph_2_height - margin.top - margin.bottom) / 2})`)
             .style("text-anchor", "middle")
             .text("Runtime");
 
         // Add chart title
-        svg.append("text")
+        svg2.append("text")
             .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${-20})`)
             .style("text-anchor", "middle")
             .style("font-size", 15)
             .text(`Runtimes per Year`);
-
-        rects.exit().remove()
-        verts.exit().remove()
-        meds.exit().remove()
-        mins.exit().remove()
-        maxes.exit().remove()
 
         function compute_stats(data) {
             // https://www.d3-graph-gallery.com/graph/boxplot_several_groups.html

@@ -45,7 +45,7 @@ d3.csv(data_file).then(function (data) {
         .domain(data.map(function (d) {
             return d.genre;
         }))
-        .range(d3.quantize(d3.interpolateHcl("#66a0e2", "#ff5c7a"), data.length));
+        .range(d3.quantize(d3.interpolateHcl("#0080ff", "#ffa500"), data.length));
 
     // Mouseover function to display the tooltip on hover
     let mouseover = function (d) {
@@ -85,7 +85,9 @@ d3.csv(data_file).then(function (data) {
             return d.y1 - d.y0;
         })
         .style("stroke", "black")
-        .style("fill", "#b9c8c6")
+        .style("fill", function (d) {
+            return color(d.genre)
+        })
         .on("mouseover", mouseover) // HINT: Pass in the mouseover and mouseout functions here
         .on("mouseout", mouseout);
 
