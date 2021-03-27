@@ -38,29 +38,25 @@
 <ol>
     <li>
         My dashboard addresses the question by...
-        <ol>
+        <ul>
             <li>
                 I show all genres in a treemap. The tooltip pops up to show the name of the genre with the count.
                 I would like to have been able to split them between "Movie" and "TV Show",
                 but I could not figure out how to nest the data in order to do that.
                 Although, this does show the number of titles per genre (and gives a nice size comparison).
             </li>
-        </ol>
-        <ol>
             <li>
                 I show a boxplot of runtime per year. Year is selectable in the text field.
                 This may not allow easy comparisons, but displaying all years would be too much information to show.
                 A boxplot shows more information than only the mean,
                 but since I had to include the mean, it is displayed on mouse hover.
             </li>
-        </ol>
-        <ol>
             <li>
                 I show each director and actor as nodes in a graph. A film including both is represented by an edge.
                 Showing the entire dataset makes the webpage unusable,
                 but it is difficult to show a graph that large and disconnected.
             </li>
-        </ol>
+        </ul>
     </li>
     <li>
         List 3 reasons why D3 was helpful and improved your visualization
@@ -89,6 +85,7 @@
             </li>
             <li>
                 I've learned from this assignment that it's incredibly time-consuming to debug JavaScript.
+                That's a seriously good reason to not use d3.
             </li>
         </ul>
     </li>
@@ -98,12 +95,32 @@
 
 <ul>
     <li>
+        I feel that my dashboard is somewhat accessible since I did try to account for the points mentioned in the articles.
         Whenever possible, I tried to use blue and orange, which are good colors to accommodate the colorblind community.
         It will be difficult for the blind to navigate the graph structure when all of the data is displayed.
         I'd like to know if the popup text is actually read by a screen-reader or not.
-
+        However, I am most satisfied with the quote,
+        "If the visual adds more complexity than your written word would otherwise, think about whether you need it in the first place."
+        It was very difficult to package some of this data in a way that was possible for me to implement in d3.
+        I did my best to consider this point at all times since it is the governing principle that affects all users.
+        In the future, I'd like to revise the treemap to separate TV shows from movies, which helps the user find genres more easily.
+        Increasing the size of the treemap entries in order to display text inside each rectangle would also be beneficial.
+        The graphing component is the least user-friendly.
+        Unfortunately, I am not sure how to display so many connections in a way that a user can access.
+        I would imagine it would involve a lot of panning, which may be difficult for blind users.
     </li>
     <li>
+        Along the way of my dashboard development, I changed my chart types several times.
+        This was driven by considerations of accessibility and by my limited knowledge of d3.
+        For example, I originally intended to have a bar chart for the genre counts,
+        but I decided that displaying that much information in a small space would not be readable,
+        so I migrated to a treemap.
+        Also, I considered a bar chart for the runtime plots as well,
+        but I decided it would not capture enough information,
+        and it would still have too much information in a small space.
+        Finally, I considered the use of edge-bundling for the director-actor graph.
+        However, I felt that the star-shaped subgraphs in a network graph made relationships more explicitly clear.
+
         The difficulty of using d3 kept me from making my dashboard more accessible.
         Further, I did not see a single example online of using alt text, so I have absolutely no idea how to do it.
         Also, I don't have a screen-reader, so I can't verify anything for the blind community.

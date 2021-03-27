@@ -8,6 +8,7 @@ You have two choices here:
 
 // Based on code which uses v2: http://bl.ocks.org/jose187/4733747
 // Based on code which uses v4: https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3
+// Based on this post: https://stackoverflow.com/a/24662179
 
 // Set up an SVG object
 let svg3 = d3.select("#graph3")
@@ -39,7 +40,7 @@ let force = d3.forceSimulation()
 d3.csv(data_file).then(function (data) {
     // console.log(data);
     // Pull a sample
-    data = data.slice(0, 10)
+    data = data.slice(0, 100)
 
     console.log(data);
 
@@ -67,9 +68,9 @@ d3.csv(data_file).then(function (data) {
         .enter()
         .append("circle")
         .attr("r", 2)
-        // .style("fill", function (d) {
-        //     return color(d.nodes.type)
-        // })
+    // .style("fill", function (d) {
+    //     return color(d.nodes.type)
+    // })
 
     let ticked = function () {
         link
@@ -99,6 +100,35 @@ d3.csv(data_file).then(function (data) {
         .on("tick", ticked);
     force.force("link")
         .links(data.links);
+
+    // Add chart title
+    svg3.append("text")
+        .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${-20})`)
+        .style("text-anchor", "middle")
+        .style("font-size", 15)
+        .text(`Director-Actor Relationships`);
+
+    // Panning functions
+    function dragstarted(d) {
+        d3.event.sourceEvent.stopPropagation();
+        d3.select(this).classed("dragging", true);
+    }
+
+    function dragged(d) {
+        d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    }
+
+    function dragended(d) {
+        d3.select(this).classed("dragging", false);
+    }
+
+    let drag = force.drag()
+        .origin(function (d) {
+            return d;
+        })
+        .on("dragstart", dragstarted)
+        .on("drag", dragged)
+        .on("dragend", dragended);
 
 })
 

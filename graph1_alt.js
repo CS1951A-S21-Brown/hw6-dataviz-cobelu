@@ -45,7 +45,7 @@ d3.csv(data_file).then(function (data) {
         .domain(data.map(function (d) {
             return d.genre;
         }))
-        .range(d3.quantize(d3.interpolateHcl("#0080ff", "#ffa500"), data.length));
+        .range(d3.quantize(d3.interpolateHcl("#80bfff", "#ffcc80"), data.length));
 
     // Mouseover function to display the tooltip on hover
     let mouseover = function (d) {
