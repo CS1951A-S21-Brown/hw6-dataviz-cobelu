@@ -40,7 +40,7 @@ let force = d3.forceSimulation()
 d3.csv(data_file).then(function (data) {
     // console.log(data);
     // Pull a sample
-    data = data.slice(0, 100)
+    data = data.slice(0, 200)
 
     console.log(data);
 
@@ -56,6 +56,25 @@ d3.csv(data_file).then(function (data) {
     //     }))
     //     .range(d3.quantize(d3.interpolateHcl("#0080ff", "#ffa500"), data.length));
 
+    // // Show the name on mouseover
+    // let mouseover = function (d) {
+    //     let html = `${d.id}`;
+    //     tooltip3.html(html)
+    //         .style("left", `${d3.event.pageX - 50}px`)
+    //         .style("top", `${d3.event.pageY - 50}px`)
+    //         .transition()
+    //         .duration(200)
+    //         .style("opacity", 0.95)
+    // };
+    //
+    // // Hide the name on mouseover
+    // let mouseout = function (d) {
+    //     // Set opacity back to 0 to hide
+    //     tooltip3.transition()
+    //         .duration(200)
+    //         .style("opacity", 0);
+    // };
+
     let link = svg3.selectAll("line")
         .data(data.links)
         .enter()
@@ -68,9 +87,11 @@ d3.csv(data_file).then(function (data) {
         .enter()
         .append("circle")
         .attr("r", 2)
-    // .style("fill", function (d) {
-    //     return color(d.nodes.type)
-    // })
+        // .on("mouseover", mouseover)
+        // .on("mouseout", mouseout);
+        // .style("fill", function (d) {
+        //     return color(d.nodes.type)
+        // })
 
     let ticked = function () {
         link
@@ -106,29 +127,9 @@ d3.csv(data_file).then(function (data) {
         .attr("transform", `translate(${(graph_2_width - margin.left - margin.right) / 2}, ${-20})`)
         .style("text-anchor", "middle")
         .style("font-size", 15)
-        .text(`Director-Actor Relationships`);
+        .text(`Director-Actor Relationships (Subset for Responsiveness)`);
 
-    // Panning functions
-    function dragstarted(d) {
-        d3.event.sourceEvent.stopPropagation();
-        d3.select(this).classed("dragging", true);
-    }
-
-    function dragged(d) {
-        d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-    }
-
-    function dragended(d) {
-        d3.select(this).classed("dragging", false);
-    }
-
-    let drag = force.drag()
-        .origin(function (d) {
-            return d;
-        })
-        .on("dragstart", dragstarted)
-        .on("drag", dragged)
-        .on("dragend", dragended);
+    // Panning functions - https://stackoverflow.com/a/24662179
 
 })
 
